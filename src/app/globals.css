@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* Colors */
+  --color-background: #0A0A0A;
+  --color-surface: #111111;
+  --color-border: #1F1F1F;
+  --color-muted: #6B7280;
+  --color-foreground: #F5F5F5;
+  --color-accent: #3B82F6;
+  --color-accent-dim: #1D4ED8;
+  --color-accent-glow: #60A5FA;
+
+  /* Fonts */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-dm-serif);
+
+  /* Spacing */
+  --spacing-section: 8rem;
+  --spacing-section-sm: 5rem;
+
+  /* Max widths */
+  --max-width-content: 900px;
+  --max-width-layout: 1200px;
+
+  /* Easing */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Keyframes */
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  --animate-fade-in: fade-in 0.4s ease forwards;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* WCAG 2.3.3 / 2.1.1 — Honour user's reduced-motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: #0A0A0A;
+    color: #F5F5F5;
+    font-feature-settings: "ss01", "cv01", "cv02";
+  }
+
+  /* WCAG 2.4.7 — Visible focus indicator for keyboard navigation */
+  :focus-visible {
+    outline: 2px solid #3B82F6;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Remove focus ring for mouse users only (browsers that support :focus-visible handle this natively) */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  ::selection {
+    background-color: #3B82F6;
+    color: white;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #0A0A0A;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #1F1F1F;
+    border-radius: 9999px;
+  }
+}
