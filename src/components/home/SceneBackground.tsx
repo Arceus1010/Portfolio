@@ -6,7 +6,6 @@ import {
   useSpring,
   useTransform,
   useScroll,
-  useMotionTemplate,
 } from "framer-motion";
 import { useEffect } from "react";
 
@@ -48,8 +47,6 @@ export default function SceneBackground() {
     return () => window.removeEventListener("mousemove", move);
   }, [mouseX, mouseY]);
 
-  // CSS mask that brightens dots near the cursor — driven by motion values
-  const dotMask = useMotionTemplate`radial-gradient(ellipse 380px 380px at ${cursorX}px ${cursorY}px, black 0%, transparent 100%)`;
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
@@ -167,17 +164,6 @@ export default function SceneBackground() {
           <rect width="100%" height="100%" fill="url(#bg-dots)" />
         </svg>
 
-        {/* Dot grid: cursor-brightened overlay — masked to cursor position */}
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle 1px at 1px 1px, rgba(245,245,245,0.55) 0%, transparent 100%)",
-            backgroundSize: "28px 28px",
-            maskImage: dotMask,
-            WebkitMaskImage: dotMask,
-          }}
-        />
       </motion.div>
 
     </div>
