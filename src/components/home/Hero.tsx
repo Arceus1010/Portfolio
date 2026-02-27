@@ -74,6 +74,7 @@ export default function Hero() {
   // Mouse-reactive gradient orb — vanilla mousemove, scoped to viewport
   useEffect(() => {
     if (shouldReduceMotion) return;
+    if (window.matchMedia("(hover: none)").matches) return;
     const orb = orbRef.current;
     if (!orb) return;
 
@@ -108,7 +109,7 @@ export default function Hero() {
   return (
     <>
       {/* Animated scene background — aurora orbs + dot grid + cursor */}
-      {!shouldReduceMotion && <SceneBackground />}
+      <SceneBackground />
 
       {/* Mouse-reactive gradient orb — fixed, large, very slow lerp */}
       {!shouldReduceMotion && (

@@ -7,17 +7,8 @@ import {
   useTransform,
   useScroll,
 } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-/**
- * SceneBackground — full-viewport animated background.
- *
- * Four stacked layers:
- * 1. Three drifting aurora orbs (always moving autonomously)
- * 2. A slow "lean" orb that follows the cursor with heavy spring lag
- * 3. A sharp cursor spotlight
- * 4. A dot-grid that brightens in a radius around the cursor (CSS mask driven by motion values)
- */
 export default function SceneBackground() {
   const mouseX = useMotionValue(
     typeof window !== "undefined" ? window.innerWidth / 2 : 760
@@ -26,32 +17,51 @@ export default function SceneBackground() {
     typeof window !== "undefined" ? window.innerHeight / 2 : 400
   );
 
-  // Sharp spotlight follows cursor quickly
   const cursorX = useSpring(mouseX, { stiffness: 90, damping: 22 });
   const cursorY = useSpring(mouseY, { stiffness: 90, damping: 22 });
 
-  // Lean orb follows cursor with heavy lag — feels like it's attracted
   const leanX = useSpring(mouseX, { stiffness: 16, damping: 24 });
   const leanY = useSpring(mouseY, { stiffness: 16, damping: 24 });
 
-  // Scroll parallax for the dot grid
   const { scrollY } = useScroll();
   const gridY = useTransform(scrollY, [0, 800], [0, -80]);
 
+  // Disable on touch devices — animated blur layers crash Safari iOS
+  const [isTouch, setIsTouch] = useState(true);
   useEffect(() => {
+    setIsTouch(window.matchMedia("(hover: none)").matches);
+  }, []);
+
+  useEffect(() => {
+    if (isTouch) return;
     const move = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
     };
     window.addEventListener("mousemove", move);
     return () => window.removeEventListener("mousemove", move);
-  }, [mouseX, mouseY]);
+  }, [isTouch, mouseX, mouseY]);
 
+  // On touch devices, render only the static dot grid — no blur, no animation
+  if (isTouch) {
+    return (
+      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <svg className="absolute inset-0 w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="bg-dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+              <circle cx="1" cy="1" r="1" fill="#F5F5F5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#bg-dots)" />
+        </svg>
+      </div>
+    );
+  }
 
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
 
-      {/* ── Aurora orb 1: Large blue, slow drift, top-left ─────────── */}
+      {/* ── Aurora orb 1 ─────────────────────────────────────────── */}
       <motion.div
         className="absolute rounded-full"
         style={{
@@ -75,7 +85,7 @@ export default function SceneBackground() {
         }}
       />
 
-      {/* ── Aurora orb 2: Indigo, mid-right, offset timing ──────────── */}
+      {/* ── Aurora orb 2 ──────────────────────────────────────────── */}
       <motion.div
         className="absolute rounded-full"
         style={{
@@ -100,7 +110,7 @@ export default function SceneBackground() {
         }}
       />
 
-      {/* ── Aurora orb 3: Deep blue, bottom-centre, very slow ───────── */}
+      {/* ── Aurora orb 3 ─────────────────────────────────────────── */}
       <motion.div
         className="absolute rounded-full"
         style={{
@@ -124,7 +134,7 @@ export default function SceneBackground() {
         }}
       />
 
-      {/* ── Lean orb — slowly drifts toward cursor ─────────────────── */}
+      {/* ── Lean orb ─────────────────────────────────────────────── */}
       <motion.div
         className="absolute rounded-full"
         style={{
@@ -139,7 +149,7 @@ export default function SceneBackground() {
         }}
       />
 
-      {/* ── Sharp cursor spotlight ──────────────────────────────────── */}
+      {/* ── Sharp cursor spotlight ────────────────────────────────── */}
       <motion.div
         className="absolute rounded-full"
         style={{
@@ -153,7 +163,7 @@ export default function SceneBackground() {
         }}
       />
 
-      {/* ── Dot grid: base (always faint) ──────────────────────────── */}
+      {/* ── Dot grid ─────────────────────────────────────────────── */}
       <motion.div className="absolute inset-0" style={{ y: gridY }}>
         <svg className="absolute inset-0 w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -163,7 +173,6 @@ export default function SceneBackground() {
           </defs>
           <rect width="100%" height="100%" fill="url(#bg-dots)" />
         </svg>
-
       </motion.div>
 
     </div>
